@@ -1,0 +1,22 @@
+import subprocess
+
+RED='\033[0;31m'
+
+GREEN='\033[0;32m'
+
+NC='\033[0m' # No Color
+
+command = ['ffmpeg', '-loop', '1', '-i', 'img.jpg', '-i', 'output.mp3', '-shortest', '-acodec', 'copy', '-vcodec', 'mjpeg', 'video.mp4', '-hide_banner', '-loglevel', 'error']
+
+try:
+
+    subprocess.check_call(command)
+
+    print(f"Your video has been created {GREEN}sucsessfully{NC}")
+
+except subprocess.CalledProcessError:
+
+    print(f"Looks like you has a {RED}FAILURE{NC}")
+
+    exit()
+
