@@ -1,0 +1,124 @@
+import os
+
+import click
+
+from pydub import AudioSegment, effects
+
+def play_audio(audio_file):
+
+    """
+
+    Play an audio file using the default system player.
+
+    """
+
+    if os.name == 'nt':  # Windows
+
+        os.startfile(audio_file)
+
+    elif os.name == 'posix':  # Linux and macOS
+
+        os.system(f'open "{audio_file}"')
+
+def apply_effect(audio_file, effect):
+
+    """
+
+    Apply an effect to an audio file and save the result to a new file.
+
+    """
+
+    audio = AudioSegment.from_file(audio_file)
+
+    if effect == 'chorus':
+
+        audio = effects.chorus(audio, delay=5000, depth=20, speed=0.3, mix=0.5)
+
+    elif effect == 'distortion':
+
+        audio = effects.overdrive(audio, gain=30)
+
+    elif effect == 'phaser':
+
+        audio = effects.phaser(audio, frequency=0.5, octaves=2, waves=4, delay=2)
+
+    else:
+
+        return False
+
+    output_file = os.path.splitext(audio_file)[0] + f'_{effect}.wav'
+
+    audio.export(output_file, format='wav')
+
+    return output_file
+
+@click.command()
+
+@click.option('--audio-file', '-a', required=True, help='Path to the input audio file')
+
+@click.option('--effects', '-e', default='', help='Comma-separated list of effects to apply')
+
+def main(audio_file, effects):
+
+    """
+
+    Apply audio effects to an input audio file and play the result.
+
+    """
+
+    click.echo('Welcome to Audio Editor!')
+
+    click.echo('')
+
+    click.echo(f'Input audio file: {audio_file}')
+
+    click.echo('')
+
+    
+
+    if not effects:
+
+        click.echo('No effects selected. Copying input file.')
+
+        output_file = os.path.splitext(audio_file)[0] + '_copy.wav'
+
+        os.system(f'cp "{audio_file}" "{output_file}"')
+
+        play_audio(output_file)
+
+        return
+
+    click.echo('Selected effects: ' + effects)
+
+    click.echo('')
+
+    effects_list = effects.split(',')
+
+    output_file = audio_file
+
+    for effect in effects_list:
+
+        click.echo(f'Applying {effect} effect...')
+
+        output_file = apply_effect(output_file, effect.strip())
+
+        if not output_file:
+
+            click.echo(f'Error: {effect} effect not recognized.')
+
+            return
+
+        click.echo('')
+
+    click.echo(f'Result file: {output_file}')
+
+    click.echo('')
+
+    click.echo('Playing result...')
+
+    play_audio(output_file)
+
+if __name__ == '__main__':
+
+    main()
+
