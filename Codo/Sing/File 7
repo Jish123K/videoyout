@@ -1,0 +1,94 @@
+import os
+
+import logging
+
+import subprocess
+
+import time
+
+try:
+
+    import playsound
+
+except ImportError:
+
+    print("Hey you need to install playsound!")
+
+    subprocess.run(["pip3", "install", "playsound"])
+
+class Silver:
+
+    rec = []
+
+    @staticmethod
+
+    def verbose():
+
+        logging.basicConfig(level=logging.DEBUG)
+
+    @staticmethod
+
+    def np_play(file):
+
+        subprocess.run(["ffplay", "-nodisp", "-autoexit", file])
+
+    @staticmethod
+
+    def video(file):
+
+        subprocess.Popen(["ffplay", "-nodisp", "-autoexit", file])
+
+    @staticmethod
+
+    def play(file):
+
+        Silver.rec.append(file)
+
+        subprocess.Popen(["ffplay", "-nodisp", "-autoexit", file])
+
+    @staticmethod
+
+    def stop():
+
+        global playing
+
+        try:
+
+            playing.terminate()
+
+            logging.info("Audio stopped!")
+
+        except NameError:
+
+            logging.warning("No audio is playing...")
+
+    @staticmethod
+
+    def restart():
+
+        logging.debug("Restart function called!")
+
+        Silver.stop()
+
+        Silver.play(Silver.rec[-1])
+
+    @staticmethod
+
+    def layer(file, times):
+
+        logging.info(f"Function is layering {times} times.")
+
+        for i in range(times):
+
+            Silver.play(file)
+
+            time.sleep(0.1)
+
+    @staticmethod
+
+    def layer_kill(times):
+
+        time.sleep(times)
+
+        Silver.stop()
+
