@@ -1,0 +1,22 @@
+import configparser
+
+import subprocess
+
+# Parse the configuration file
+
+config = configparser.ConfigParser()
+
+config.read('../conf.ini')
+
+# Get the video link
+
+video_link = config['youtube-dl']['link']
+
+# Download the audio using yt-dlp
+
+subprocess.run(['yt-dlp', video_link, '-o', 'input.opus', '-q', '-x'])
+
+# Convert the opus file to mp3 using ffmpeg
+
+subprocess.run(['ffmpeg', '-i', 'input.opus', 'input.mp3', '-hide_banner', '-loglevel', 'error'])
+
