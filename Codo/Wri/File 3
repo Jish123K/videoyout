@@ -1,0 +1,44 @@
+import click
+
+from pytube import YouTube
+
+@click.command()
+
+@click.option("--path", prompt="What is the video path?")
+
+@click.option("--title", prompt="What do you want the title to be?")
+
+@click.option("--description", prompt="What do you want the description to be?")
+
+@click.option("--tags", prompt="What should the tags be?")
+
+@click.option("--public", is_flag=True, help="Set video to public")
+
+def upload_video(path, title, description, tags, public):
+
+    if public:
+
+        privacy = "public"
+
+    else:
+
+        privacy = "private"
+
+    youtube = YouTube()
+
+    youtube.from_file(path)
+
+    youtube.title = title
+
+    youtube.description = description
+
+    youtube.tags = tags.split(",")
+
+    youtube.category = "22"
+
+    youtube.publish(privacy_status=privacy)
+
+if __name__ == "__main__":
+
+    upload_video()
+
