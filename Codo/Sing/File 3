@@ -1,0 +1,10 @@
+import subprocess
+
+print('----- Welcome to the single frame script! -----')
+
+subprocess.run(['python3', 'server-yt-download.py'])
+
+print('Hey server-yt-download.py is done running')
+
+subprocess.run(['python3', 'server_editor.py'])
+
