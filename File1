@@ -1,34 +1,3 @@
-import java.util.Scanner;
 
-import java.io.*;
-
-public class Main {
-
-    public static void main(String[] args) throws IOException {
-
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.print("enter link here >>> ");
-
-        String link = scanner.nextLine();
-
-        Runtime.getRuntime().exec("yt-dlp " + link + " -o video");
-
-        System.out.println("Would you like to upload the video to youtube?");
-
-        String answer = scanner.nextLine();
-
-        if (answer.equals("y")) {
-
-            Runtime.getRuntime().exec("python3 upload_wizard.py");
-
-        } else {
-
-            System.exit(0);
-
-        }
-
-    }
-
-}
+      
 
