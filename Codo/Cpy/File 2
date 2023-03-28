@@ -1,0 +1,37 @@
+import subprocess
+
+from configparser import ConfigParser
+
+from pathlib import Path
+
+# Get the path to the config file
+
+config_path = Path("../config.ini")
+
+# Load the config file
+
+config = ConfigParser()
+
+config.read(config_path)
+
+# Get the link and answer from the config file
+
+link = config.get("youtube", "link")
+
+answer = config.get("youtube", "answer")
+
+# Download the video using yt-dlp
+
+subprocess.run(["yt-dlp", link, "-o", "video"])
+
+# Ask the user if they want to upload the video
+
+if answer == "y":
+    subprocess.run(["python3", "upload_wizard.py"])
+else:
+
+    exit()
+
+[youtube]
+link = <your youtube link here>
+answer = <y or n>
