@@ -1,29 +1,14 @@
 import subprocess
-
 from pytube import YouTube
-
 link = input("Enter link here >>> ")
-
 # Download video using pytube
-
 yt = YouTube(link)
-
 video = yt.streams.get_highest_resolution()
-
 video.download(output_path='.', filename='video')
-
 print("Would you like to upload the video to youtube?")
-
 answer = input(">>> ")
-
 if answer.lower() == "y":
-
-    # Upload video using subprocess
-
+   # Upload video using subprocess
     subprocess.run(['python3', 'upload_wizard.py'], check=True)
-
 else:
-
     exit()
-
-
