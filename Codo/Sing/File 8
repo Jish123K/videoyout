@@ -1,0 +1,119 @@
+.json', 'w') as token:
+
+token.write(creds.to_json())
+
+kotlin
+
+Copy code
+
+youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION, credentials=creds)
+
+return youtube
+
+def initialize_upload(youtube, options):
+
+tags = None
+
+if options.keywords:
+
+tags = options.keywords.split(",")
+
+scss
+
+Copy code
+
+body = dict(
+
+    snippet=dict(
+
+        title=options.title,
+
+        description=options.description,
+
+        tags=tags,
+
+        categoryId=options.category
+
+    ),
+
+    status=dict(
+
+        privacyStatus=options.privacyStatus
+
+    )
+
+)
+
+insert_request = youtube.videos().insert(
+
+    part=",".join(body.keys()),
+
+    body=body,
+
+    media_body=MediaFileUpload(options.file, chunksize=-1, resumable=True)
+
+)
+
+resumable_upload(insert_request)
+
+def resumable_upload(request):
+
+response = None
+
+error = None
+
+retry = 0
+
+while response is None:
+
+try:
+
+print("Uploading file...")
+
+status, response = request.next_chunk()
+
+if response is not None:
+
+if 'id' in response:
+
+print("Video id '%s' was successfully uploaded." % response['id'])
+
+else:
+
+exit("The upload failed with an unexpected response: %s" % response)
+
+except HttpError as e:
+
+if e.resp.status in RETRIABLE_STATUS_CODES:
+
+error = "A retriable HTTP error %d occurred:\n%s" % (e.resp.status, e.content)
+
+else:
+
+raise
+
+except RETRIABLE_EXCEPTIONS as e:
+
+error = "A retriable error occurred: %s" % e
+
+lua
+
+Copy code
+
+    if error is not None:
+
+        print(error)
+
+        retry += 1
+
+        if retry > MAX_RETRIES:
+
+            exit("No longer attempting to retry.")
+
+        max_sleep = 2 ** retry
+
+        sleep_seconds = random.random() * max_sleep
+
+        print("Sleeping %f seconds and then retrying..." % sleep_seconds)
+
+        time.sleep(sleep_seconds)
