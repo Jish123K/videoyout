@@ -1,0 +1,17 @@
+import subprocess
+
+# ANSI escape codes for colored output
+RED = "\033[0;31m"
+GREEN = "\033[0;32m"
+NC = "\033[0m" # No Color
+
+# Create the video using ffmpeg
+if subprocess.run(["ffmpeg", "-loop", "1", "-i", "img.jpg", "-i", "output.mp3", "-shortest", "-acodec", "copy", "-vcodec", "mjpeg", "video.mp4"], capture_output=True).returncode != 0:
+    print(f"Looks like you had a {RED}FAILURE{NC}")
+    exit()
+else:
+    print(f"Your video has been created {GREEN}successfully{NC}")
+
+# Upload the video using upload_wizard.py
+subprocess.run(["python3", "upload_wizard.py"])
+exit()
