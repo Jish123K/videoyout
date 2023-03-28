@@ -193,4 +193,24 @@ except HttpError as e:
 
 else:
 
-    print("The video was uploaded successfully!")
+    response = request.execute()
+print(response)
+print("The video was successfully uploaded to YouTube!")
+except HttpError as e:
+if e.resp.status in RETRIABLE_STATUS_CODES:
+error = "A retriable HTTP error {e.resp.status} occurred:\n{e.content}"
+else:
+raise
+except RETRIABLE_EXCEPTIONS as e:
+error = "A retriable error occurred: {e}"
+if error is not None:
+print(f"{error}.")
+error = None
+retry += 1
+if retry > MAX_RETRIES:
+print("No longer attempting to retry.")
+break
+max_sleep = 2 ** retry
+sleep_seconds = random.random() * max_sleep
+print(f"Sleeping {sleep_seconds} seconds and then retrying...")
+time.sleep(sleep_seconds)
