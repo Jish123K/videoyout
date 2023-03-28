@@ -1,0 +1,118 @@
+import argparse
+
+from pathlib import Path
+
+from pydub import AudioSegment
+
+from pydub.effects import (
+
+    Chorus,
+
+    Distortion,
+
+    Phaser,
+
+    Gain,
+
+    Reverb,
+
+    AllPass,
+
+    Normalize,
+
+    PitchShift,
+
+)
+
+def parse_args():
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("conf_file", type=str, help="Path to conf file")
+
+    parser.add_argument(
+
+        "-i", "--input", type=str, help="Path to input audio file", required=True
+
+    )
+
+    parser.add_argument(
+
+        "-o", "--output", type=str, help="Path to output audio file", required=True
+
+    )
+
+    return parser.parse_args()
+
+def apply_effects(audio: AudioSegment, effects: dict) -> AudioSegment:
+
+    for effect_name, enabled in effects.items():
+
+        if not enabled:
+
+            continue
+
+        effect_class = globals().get(effect_name, None)
+
+        if effect_class is None:
+
+            print(f"Effect {effect_name} not found!")
+
+            continue
+
+        audio = effect_class().apply(audio)
+
+    return audio
+
+def read_conf_file(conf_file: str) -> dict:
+
+    effects = {}
+
+    with open(conf_file, "r") as f:
+
+        for line in f:
+
+            line_parts = line.split()
+
+            if len(line_parts) == 3:
+
+                effect_name, _, enabled = line_parts
+
+                effects[effect_name] = enabled.lower() == "y"
+
+    return effects
+
+def main():
+
+    args = parse_args()
+
+    input_file = Path(args.input)
+
+    output_file = Path(args.output)
+
+    conf_file = Path(args.conf_file)
+
+    if not input_file.exists():
+
+        print(f"Input file {input_file} does not exist!")
+
+        return
+
+    if not conf_file.exists():
+
+        print(f"Conf file {conf_file} does not exist!")
+
+        return
+
+    effects = read_conf_file(conf_file)
+
+    audio = AudioSegment.from_file(input_file)
+
+    audio = apply_effects(audio, effects)
+
+    audio.export(output_file, format="mp3")
+
+if __name__ == "__main__":
+
+    main()
+
